@@ -17,6 +17,5 @@ data class Departure(
 
 data class StopDepartures(
     val stop: Stop,
-    val direction: String,
     val departures: List<Departure>
 )

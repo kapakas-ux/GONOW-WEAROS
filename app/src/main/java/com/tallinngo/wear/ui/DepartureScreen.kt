@@ -115,31 +115,19 @@ fun DepartureScreen(
                 modifier = Modifier.fillMaxSize()
             ) {
                 s.stops.forEach { stopDepartures ->
-                    // Stop name + direction header
+                    // Stop name header
                     item {
-                        Column(
+                        Text(
+                            text = stopDepartures.stop.name,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF4FC3F7),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 8.dp, vertical = 4.dp)
-                        ) {
-                            Text(
-                                text = stopDepartures.stop.name,
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color(0xFF4FC3F7),
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                            if (stopDepartures.direction.isNotEmpty()) {
-                                Text(
-                                    text = "→ ${stopDepartures.direction}",
-                                    fontSize = 11.sp,
-                                    color = Color(0xFF90A4AE),
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            }
-                        }
+                        )
                     }
 
                     if (stopDepartures.departures.isEmpty()) {
