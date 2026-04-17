@@ -24,20 +24,16 @@ class DepartureRepository(private val context: Context) {
             return Result.Error("No stops within 500m.\nAre you in Estonia?")
         }
 
-        // Group platforms by name, merge departures sorted by time
-        val grouped = stops.groupBy { it.name }
-        val results = grouped.entries.take(4).mapNotNull { (_, platforms) ->
-            val allDepartures = platforms.flatMap { stop ->
-                try {
-                    PeatusApi.fetchDepartures(stop.gtfsId)
-                } catch (e: Exception) {
-                    emptyList()
-                }
-            }.sortedBy { it.minutesUntil }.take(5)
-
-            if (allDepartures.isEmpty()) return@mapNotNull null
-            StopDepartures(platforms.first(), allDepartures)
-        }
+        // Each platform (gtfsId) shown separately
+        val results = stops.take(10).mapNotNull { stop ->
+            val departures = try {
+                PeatusApi.fetchDepartures(stop.gtfsId)
+            } catch (e: Exception) {
+                emptyList()
+            }
+            if (departures.isEmpty()) return@mapNotNull null
+            StopDepartures(stop, departures.take(4))
+        }.take(6)
 
         return Result.Success(results)
     }
