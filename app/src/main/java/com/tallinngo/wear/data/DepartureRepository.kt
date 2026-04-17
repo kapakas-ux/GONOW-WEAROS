@@ -24,19 +24,24 @@ class DepartureRepository(private val context: Context) {
             return Result.Error("No stops within 500m.\nAre you in Estonia?")
         }
 
-        // Group platforms by name, merge departures from all platforms
-        val grouped = stops.groupBy { it.name }
-        val results = grouped.entries.take(4).map { (name, platforms) ->
-            val allDepartures = platforms.flatMap { stop ->
-                try {
-                    PeatusApi.fetchDepartures(stop.gtfsId)
-                } catch (e: Exception) {
-                    emptyList()
-                }
-            }.sortedBy { it.minutesUntil }.take(5)
+        // Fetch departures for each platform separately
+        val results = stops.take(8).mapNotNull { stop ->
+            val departures = try {
+                PeatusApi.fetchDepartures(stop.gtfsId)
+            } catch (e: Exception) {
+                emptyList()
+            }
+            if (departures.isEmpty()) return@mapNotNull null
 
-            StopDepartures(platforms.first(), allDepartures)
-        }
+            // Use most common headsign as direction
+            val direction = departures
+                .groupBy { it.headsign }
+                .maxByOrNull { it.value.size }
+                ?.key ?: ""
+
+            StopDepartures(stop, direction, departures.take(4))
+        }.take(6)
+
         return Result.Success(results)
     }
 }
