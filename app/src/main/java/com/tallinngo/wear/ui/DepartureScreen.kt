@@ -175,7 +175,7 @@ fun DepartureScreen(
                         onClick = { viewModel.refresh() },
                         modifier = Modifier.padding(top = 4.dp)
                     ) {
-                        Text("↻ Refresh", fontSize = 12.sp)
+                        Text("Refresh", fontSize = 12.sp)
                     }
                 }
             }
