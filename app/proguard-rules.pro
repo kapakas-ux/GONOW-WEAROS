@@ -1,0 +1,4 @@
+-keep class com.tallinngo.wear.data.** { *; }
+-keepattributes Signature
+-dontwarn okhttp3.**
+-dontwarn okio.**
