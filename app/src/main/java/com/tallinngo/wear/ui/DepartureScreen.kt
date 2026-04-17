@@ -46,19 +46,17 @@ class DepartureViewModel(application: Application) : AndroidViewModel(applicatio
     private val _state = MutableStateFlow<UiState>(UiState.Loading)
     val state = _state.asStateFlow()
 
-    init {
-        refresh()
-    }
-
     fun refresh() {
         viewModelScope.launch {
             _state.value = UiState.Loading
             try {
-                val stops = repository.getNearbyDepartures()
-                if (stops.isEmpty()) {
-                    _state.value = UiState.Error("No stops found nearby")
-                } else {
-                    _state.value = UiState.Success(stops)
+                when (val result = repository.getNearbyDepartures()) {
+                    is DepartureRepository.Result.Success -> {
+                        _state.value = UiState.Success(result.stops)
+                    }
+                    is DepartureRepository.Result.Error -> {
+                        _state.value = UiState.Error(result.message)
+                    }
                 }
             } catch (e: Exception) {
                 _state.value = UiState.Error(e.message ?: "Unknown error")
@@ -68,9 +66,19 @@ class DepartureViewModel(application: Application) : AndroidViewModel(applicatio
 }
 
 @Composable
-fun DepartureScreen(viewModel: DepartureViewModel = viewModel()) {
+fun DepartureScreen(
+    hasLocationPermission: Boolean = false,
+    viewModel: DepartureViewModel = viewModel()
+) {
     val state by viewModel.state.collectAsState()
     val listState = rememberScalingLazyListState()
+
+    // Auto-refresh when permission is granted
+    androidx.compose.runtime.LaunchedEffect(hasLocationPermission) {
+        if (hasLocationPermission) {
+            viewModel.refresh()
+        }
+    }
 
     when (val s = state) {
         is UiState.Loading -> {

@@ -4,8 +4,8 @@ import androidx.compose.runtime.Composable
 import com.tallinngo.wear.ui.theme.GoNowWearTheme
 
 @Composable
-fun WearApp() {
+fun WearApp(hasLocationPermission: Boolean = false) {
     GoNowWearTheme {
-        DepartureScreen()
+        DepartureScreen(hasLocationPermission = hasLocationPermission)
     }
 }
