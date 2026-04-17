@@ -1,6 +1,7 @@
 package com.tallinngo.wear.ui
 
 import android.app.Application
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,10 +17,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.tallinngo.wear.R
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -114,6 +118,18 @@ fun DepartureScreen(
                 state = listState,
                 modifier = Modifier.fillMaxSize()
             ) {
+                // Logo at top
+                item {
+                    Image(
+                        painter = painterResource(R.drawable.logo),
+                        contentDescription = "GO NOW",
+                        contentScale = ContentScale.FillWidth,
+                        modifier = Modifier
+                            .fillMaxWidth(0.65f)
+                            .padding(vertical = 4.dp)
+                    )
+                }
+
                 s.stops.forEach { stopDepartures ->
                     // Stop name header
                     item {
