@@ -46,15 +46,11 @@ object PeatusApi {
             ?.getAsJsonArray("edges")
             ?: return@withContext emptyList()
 
-        val seen = mutableSetOf<String>()
         edges.mapNotNull { edge ->
             val node = edge.asJsonObject.getAsJsonObject("node")
             val stopObj = node.getAsJsonObject("stop")
             val gtfsId = stopObj.get("gtfsId").asString
             val name = stopObj.get("name").asString
-
-            // Deduplicate by name (multiple platforms for same stop)
-            if (!seen.add(name)) return@mapNotNull null
 
             Stop(
                 gtfsId = gtfsId,
@@ -62,14 +58,14 @@ object PeatusApi {
                 lat = stopObj.get("lat").asDouble,
                 lon = stopObj.get("lon").asDouble
             )
-        }.take(6)
+        }.take(10)
     }
 
     suspend fun fetchDepartures(stopGtfsId: String): List<Departure> = withContext(Dispatchers.IO) {
         val nowSeconds = System.currentTimeMillis() / 1000
         val query = """
             {
-              stop(id: "estonia:$stopGtfsId") {
+              stop(id: "$stopGtfsId") {
                 stoptimesWithoutPatterns(numberOfDepartures: 6, startTime: ${nowSeconds - 60}) {
                   scheduledDeparture
                   realtimeDeparture
